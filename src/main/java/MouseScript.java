@@ -8,9 +8,9 @@ public class MouseScript {
 		try {
 			Robot robot =  new Robot();
 			// Desktop Y Values are 25 more than Laptop. X Values are the same (1920x1080 vs 1920x1200)
-			// Values are {Room 1, Room 2, Room 3, Room 4, Refresh Lobbies, Auto, Loading, Loss, Back}
-			int[] LaptopY = {430, 565, 700, 830, 285, 200, 250, 753, 185};
-			int[] DesktopY = {455, 590, 725, 855, 310, 225, 275, 770, 210};
+			// Values are {Room 1, Room 2, Room 3, Room 4, Refresh Lobbies, Auto, Loading, Loss, Back, Campaign, Refill Energy}
+			int[] LaptopY = {430, 565, 700, 830, 285, 200, 250, 753, 185, 895, 725};
+			int[] DesktopY = {455, 590, 725, 855, 310, 225, 275, 770, 210, 920, 750};
 			clickAI(robot, DesktopY);
 //			clickAI(robot, LaptopY);
 //			getMouseDetails(robot, DesktopY);
@@ -88,10 +88,13 @@ public class MouseScript {
 			int auto = 0;
 			int loss = 0;
 			int back = 0;
+			int campaign = 0;
+			int refill = 0;
 			int StrengthenX = 568;
 			int AbyssX = 565;
 			int LimitBreakX = 557;
 			int EventX = 567;
+			boolean autoRefill = false; // Set to true to autoRefill energy
 
 			int x = LimitBreakX;
 			while(true) {
@@ -121,9 +124,11 @@ public class MouseScript {
 				back = robot.getPixelColor(370, Y[8]).getBlue();
 				loading = robot.getPixelColor(1500, Y[6]).getBlue();
 				loss = robot.getPixelColor(1030, Y[7]).getBlue();
+				campaign = robot.getPixelColor(650, Y[9]).getBlue();
+				refill = robot.getPixelColor(1150, Y[10]).getBlue();
 
 				// In Battle
-				if (back != 27 && auto < 100) { // Enable Auto Battle if Disabled
+				if (back != 27 && back != 13 && auto < 100) { // Enable Auto Battle if Disabled
 					click(robot, 1461, Y[5]);
 				} else if(auto >= 150 || loading == 0) { // Pause 5 seconds to allow time to close script
 					Thread.sleep(5000);
@@ -134,19 +139,32 @@ public class MouseScript {
 					click(robot, 856, Y[7] - 10);
 				}
 
-				// Click on a lobby if it is Konosuba Event
-				if ((LimitLobby[0] == white && EventLobby[0] == white) || LimitLobby[0] == white || StrengthLobby[0] == white || AbyssLobby[0] == white) {
-					click(robot, 700, Y[0]);
+				// Out of energy
+				if(autoRefill && refill == 77) {
+					click(robot, 1150, Y[10]);
+					Thread.sleep(2000);
+					click(robot, 960, 815); // Works on both computers
 				}
-				if ((LimitLobby[1] == white && EventLobby[1] == white) || LimitLobby[1] == white || StrengthLobby[1] == white || AbyssLobby[1] == white) {
-					click(robot, 700, Y[1]);
+
+				// Auto play chapter 4, story 5. Y values work on both computers
+				if(campaign == 239) {
+					click(robot, 1270, 450);
+					Thread.sleep(2000);
+					click(robot, 1450, 890);
 				}
-				if ((LimitLobby[2] == white && EventLobby[2] == white) || LimitLobby[2] == white || StrengthLobby[2] == white || AbyssLobby[2] == white) {
-					click(robot, 700, Y[2]);
-				}
-				if ((LimitLobby[3] == white && EventLobby[3] == white) || LimitLobby[3] == white || StrengthLobby[3] == white || AbyssLobby[3] == white) {
-					click(robot, 700, Y[3]);
-				}
+				// Click on a lobby if it meets criteria
+//				if ((LimitLobby[0] == white && EventLobby[0] == white) || LimitLobby[0] == white || StrengthLobby[0] == white || AbyssLobby[0] == white) {
+//					click(robot, 700, Y[0]);
+//				}
+//				if ((LimitLobby[1] == white && EventLobby[1] == white) || LimitLobby[1] == white || StrengthLobby[1] == white || AbyssLobby[1] == white) {
+//					click(robot, 700, Y[1]);
+//				}
+//				if ((LimitLobby[2] == white && EventLobby[2] == white) || LimitLobby[2] == white || StrengthLobby[2] == white || AbyssLobby[2] == white) {
+//					click(robot, 700, Y[2]);
+//				}
+//				if ((LimitLobby[3] == white && EventLobby[3] == white) || LimitLobby[3] == white || StrengthLobby[3] == white || AbyssLobby[3] == white) {
+//					click(robot, 700, Y[3]);
+//				}
 
 				// Refresh
 				click(robot, Refresh[0], Refresh[1]);
